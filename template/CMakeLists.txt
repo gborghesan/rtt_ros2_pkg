@@ -33,6 +33,35 @@ target_link_libraries(@package-component
 @[end if]@
 
 
+@[if plugin]@
+# Building a Plugin
+#
+# Creates a plugin library lib@(package)-plugin-<target>.so
+# and installs in the directory lib/orocos/@(package)/plugins/
+#
+# Be aware that a plugin may only have the loadRTTPlugin() function once defined in a .cpp file.
+# This function is defined by the plugin and service CPP macros.
+#
+orocos_plugin(@(package)-plugin src/@(package)-plugin.cpp) # ...only one plugin function per library !
+#
+# You may add multiple orocos_plugin statements.
+@[end if]@
+
+
+@[if service]@
+#
+# Building a Service:
+#
+# Creates a plugin library lib@(package)-service-<target>.so
+# and installs in the directory lib/orocos/@(package)/plugins/
+#
+orocos_service(@(package)-service src/@(package)-service.cpp) # ...only one service per library !
+#
+# You may add multiple orocos_service statements.
+
+@[end if]@
+
+
 ## to install some header or application file in the share folder
 #install(DIRECTORY include/
 #  DESTINATION include

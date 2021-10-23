@@ -13,13 +13,13 @@ using namespace std;
 bool loadRTTPlugin( RTT::TaskContext* t )
 {
     if ( t == 0 )
-        cout << "Plugin of @pkgname@ loaded in process."<< endl;
+        cout << "Plugin of @(package) loaded in process."<< endl;
     else
-        cout << "Plugin of @pkgname@ loaded in component: "<< t->getName() << endl;
+        cout << "Plugin of @(package) loaded in component: "<< t->getName() << endl;
     return true;
 }
 
 std::string getRTTPluginName()
 {
-    return "@pkgname@-example-plugin";
+    return "@(package)-plugin";
 }

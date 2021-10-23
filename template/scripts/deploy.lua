@@ -30,7 +30,26 @@ depl:loadComponent("cmp", "@(package)_component")
 cmp = depl:getPeer("cmp")
 cmp:setPeriod(1)
 
+
 depl:stream("cmp.test_port", ros:topic("/test_topic",false)) 
 
+@[if service]@
+--loading a service in the component
+if cmp:loadService("@(package)-service") then
+  print("@(package)-service loaded in " .. cmp:getName()) 
+else
+  print("@(package)-service fails to load") 
+end
+@[end if]@
+
+@[if plugin]@
+--loading a service in the component
+if depl:loadService(cmp:getName(),"@(package)-plugin") then
+  print("@(package)-plugin provided to  " .. cmp:getName()) 
+else
+  print("@(package)-plugin fails to load") 
+end
+@[end if]@
+
 cmp:configure()
-cmp:start()
+--cmp:start()

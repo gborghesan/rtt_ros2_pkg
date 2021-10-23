@@ -31,9 +31,21 @@ def create_package(package, create, **kwargs):
     print ("package name {}".format(package))
     # Create package directory
     print(create)
+    if 'all' in create:
+        component=True;
+        deploy=True
+        plugin=True;
+        service=True;
+        print('found all')
     if 'component' in create:
         component=True;
         print('found component')
+    if 'plugin' in create:
+        plugin=True
+        print('found plugin')
+    if 'service' in create:
+        service=True
+        print('found service')
     if 'deploy' in create:
         deploy=True
         print('found deploy')
@@ -53,6 +65,9 @@ def create_package(package, create, **kwargs):
     data.update({
         'package': package,
         'component': component,
+        'plugin': plugin,
+        'service' : service,
+        'deploy' : deploy
     })
     for file in ('package.xml', 'CMakeLists.txt'):
         print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
@@ -63,6 +78,22 @@ def create_package(package, create, **kwargs):
             template_basepath=TEMPLATE_DIR)
     if component:
         for file in ('src/pkgname-component.cpp','src/pkgname-component.hpp'):
+            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            expand_template(
+            file,
+            data=data,
+            output_file=(destination_directory/file.replace("pkgname", package)),
+            template_basepath=TEMPLATE_DIR)
+    if plugin:
+        for file in (['src/pkgname-plugin.cpp']):
+            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            expand_template(
+            file,
+            data=data,
+            output_file=(destination_directory/file.replace("pkgname", package)),
+            template_basepath=TEMPLATE_DIR)
+    if service:
+        for file in (['src/pkgname-service.cpp']):
             print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
             expand_template(
             file,
