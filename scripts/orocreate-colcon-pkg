@@ -101,7 +101,7 @@ def create_package(package, create, **kwargs):
             output_file=(destination_directory/file.replace("pkgname", package)),
             template_basepath=TEMPLATE_DIR)
     if deploy:
-        for file in (['scripts/deploy.lua']):
+        for file in ('scripts/deploy.lua', 'launch/example.launch.py', 'README.md'):
             print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
             expand_template(
             file,

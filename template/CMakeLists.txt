@@ -66,11 +66,12 @@ orocos_service(@(package)-service src/@(package)-service.cpp) # ...only one serv
 #install(DIRECTORY include/
 #  DESTINATION include
 #)
-
-install(DIRECTORY scripts
+@[if deploy]@
+install(
+  DIRECTORY scripts launch
   DESTINATION share/@(package)/
 )
-
+@[end if]@
 
 # rtt_ros2_export_plugin_depend(rtt_ros2_params)
  rtt_ros2_export_plugin_depend(rtt_ros2_std_msgs)
