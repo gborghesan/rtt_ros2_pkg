@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 Intermodalics BVBA
-#
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,27 +27,31 @@ DEFAULT_TRANSPORTS = ['ros']
 
 
 def create_package(package, create, **kwargs):
-    print ("package name {}".format(package))
+    print ("New package name {}".format(package))
     # Create package directory
     print(create)
+    component=False;
+    deploy=False;
+    plugin=False;
+    service=False;
     if 'all' in create:
         component=True;
         deploy=True
         plugin=True;
         service=True;
-        print('found all')
+        print('Generating templates for a component, deploy files, a plugin, a service.')
     if 'component' in create:
         component=True;
-        print('found component')
+        print('Generating templates for a component.')
     if 'plugin' in create:
         plugin=True
-        print('found plugin')
+        print('Generating templates for a plugin.')
     if 'service' in create:
         service=True
-        print('found service')
+        print('Generating templates for a service.')
     if 'deploy' in create:
         deploy=True
-        print('found deploy')
+        print('Generating templates for deploy files.')
     if kwargs.get('destination_directory', None):
         destination_directory = Path(kwargs['destination_directory'])
     else:
@@ -70,43 +73,49 @@ def create_package(package, create, **kwargs):
         'deploy' : deploy
     })
     for file in ('package.xml', 'CMakeLists.txt'):
-        print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+        new_file_name=destination_directory/file.replace("pkgname", package)
+        print("Generating File {}".format(new_file_name))
         expand_template(
-            file,
-            data=data,
-            output_file=(destination_directory / file),
-            template_basepath=TEMPLATE_DIR)
+                file,
+                data = data,
+                output_file = new_file_name,
+                template_basepath = TEMPLATE_DIR
+            )
     if component:
         for file in ('src/pkgname-component.cpp','src/pkgname-component.hpp'):
-            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            new_file_name=destination_directory/file.replace("pkgname", package)
+            print("Generating File {}".format(new_file_name))
             expand_template(
             file,
             data=data,
-            output_file=(destination_directory/file.replace("pkgname", package)),
+            output_file=(new_file_name),
             template_basepath=TEMPLATE_DIR)
     if plugin:
         for file in (['src/pkgname-plugin.cpp']):
-            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            new_file_name=destination_directory/file.replace("pkgname", package)
+            print("Generating File {}".format(new_file_name))
             expand_template(
             file,
             data=data,
-            output_file=(destination_directory/file.replace("pkgname", package)),
+            output_file=(new_file_name),
             template_basepath=TEMPLATE_DIR)
     if service:
         for file in (['src/pkgname-service.cpp']):
-            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            new_file_name=destination_directory/file.replace("pkgname", package)
+            print("Generating File {}".format(new_file_name))
             expand_template(
             file,
             data=data,
-            output_file=(destination_directory/file.replace("pkgname", package)),
+            output_file=(new_file_name),
             template_basepath=TEMPLATE_DIR)
     if deploy:
         for file in ('scripts/deploy.lua', 'launch/example.launch.py', 'README.md'):
-            print("template_basepath: {}, File {}".format(TEMPLATE_DIR,file))
+            new_file_name=destination_directory/file.replace("pkgname", package)
+            print("Generating File {}".format(new_file_name))
             expand_template(
             file,
             data=data,
-            output_file=(destination_directory / file),
+            output_file=(new_file_name),
             template_basepath=TEMPLATE_DIR)
 
 
@@ -114,7 +123,8 @@ def create_package(package, create, **kwargs):
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description='Generate an RTT package.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter)
+    
     parser.add_argument(
         'package', metavar='PACKAGE',
         help='The name of the interface package')
@@ -124,7 +134,15 @@ def main(argv=sys.argv[1:]):
         default='.',
         help='Directory where to create the package directory (not including the package name)')
     parser.add_argument(
-            '--create',choices=['all', 'component', 'deploy'], nargs="+",default=['component'])
+            '--create',choices=['all', 'component', 'deploy', 'plugin', 'service'], nargs="+",default=['component'],
+            help='Provide the possible choices that can be used in the autogenerated files. One or more options can be passed.'
+            '\nall:  produces all the templates'
+            '\ncomponent:  produces templates for a conpmponent,'
+            '\ncomponent:  produces templates for a deploy - lua and launch files, normally requires that components are generated too,'
+            '\ncomponent:  produces templates for a plugin,'
+            '\ncomponent:  produces templates for a service.'
+            )
+
 
     #pkg_option_group=parser.add_argument_group('package options')
     #pkg_option_group.add_argument("component", action="store_true")
@@ -142,7 +160,7 @@ def main(argv=sys.argv[1:]):
     package_xml_group = parser.add_argument_group('package.xml options')
     package_xml_group.add_argument(
         '--description',
-        default='Automatic-generated rtt typekit from ros2 interface',
+        default='Automatic-generated rtt package for ros2 integration',
         help='The description given in the package.xml')
     package_xml_group.add_argument(
         '--license',
