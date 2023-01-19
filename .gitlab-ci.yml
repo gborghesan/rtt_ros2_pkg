@@ -1,27 +1,5 @@
-image: ruby:latest
-
-variables:
-  JEKYLL_ENV: production
-
+# The Docker image that will be used to build your app
+image: node:lts
+# Functions that should be executed before the build script is run
 before_script:
-  - bundle install
-
-test:
-  stage: test
-  script:
-  - bundle exec jekyll build -d test
-  artifacts:
-    paths:
-    - test
-  except:
-  - master
-
-pages:
-  stage: deploy
-  script:
-  - bundle exec jekyll build -d public
-  artifacts:
-    paths:
-    - public
-  only:
-  - master
+  - npm ci
