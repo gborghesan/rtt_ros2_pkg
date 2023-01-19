@@ -1,1 +1,14 @@
-image: node:latest
+image: ruby:latest
+
+variables:
+  JEKYLL_ENV: production
+
+pages:
+  script:
+  - bundle install
+  - bundle exec jekyll build -d public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
